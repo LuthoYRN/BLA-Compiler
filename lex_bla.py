@@ -4,6 +4,7 @@ import sys
 # Define token names
 tokens = ['COMMENT', 'OP', 'ID', 'BINARY_LITERAL', 'WHITESPACE']
 
+#Token rules
 t_OP = r'[ASMD=()]'
 
 def t_ID(t):
@@ -26,8 +27,10 @@ def t_error(t):
     print(f"Illegal character '{t.value[0]}' at line {t.lexer.lineno}")
     t.lexer.skip(1)
 
+#Building lexer
 lexer = lex.lex()
 
+#Processing bla file
 def process_file(input_filename):
     output_filename = input_filename.replace(".bla", ".tkn")
     try:

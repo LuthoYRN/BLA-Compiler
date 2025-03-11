@@ -1,21 +1,34 @@
 import ply.yacc as yacc
-from lex_bla import tokens, lexer
+from lex_bla import tokens,lexer
 import sys
+
+def filter_tokens(lexer, data):
+    lexer.input(data)
+    filtered_tokens = []
+    for token in lexer:
+        if token.type not in ['WHITESPACE', 'COMMENT']:
+            filtered_tokens.append(token)
+    return filtered_tokens
 
 # Parsing rules
 def p_program(p):
     '''
-    program : program statement
-            | statement
+    program : statements
+    '''
+    p[0] = ('Program', p[1])
+
+def p_statements(p):
+    '''
+    statements : statements statement
+               | statement
+               |
     '''
     if len(p) == 3:
-        if p[2] is not None:  # Ignore None values from WHITESPACE/COMMENT
-            p[0] = p[1] + [p[2]]
-        else:
-            p[0] = p[1]
+        p[0] = p[1] + [p[2]]
+    elif len(p) == 2:
+        p[0] = [p[1]]
     else:
-        p[0] = [p[1]] if p[1] is not None else []  # Skip None entries
-
+        p[0] = []
 
 def p_statement(p):
     '''
@@ -55,13 +68,6 @@ def p_factor(p):
         p[0] = p[1]
     elif len(p) == 4:
         p[0] = p[2]
-        
-def p_ignore_whitespace_comment(p):
-    '''
-    statement : WHITESPACE
-              | COMMENT
-    '''
-    p[0] = None  
 
 def p_error(p):
     print("Syntax error found!")
@@ -69,53 +75,58 @@ def p_error(p):
 # Building the parser
 parser = yacc.yacc()
 
-def generate_ast_string(node, indent=1):
-    """
-    Recursively generate AST string representation with proper indentation
-    """
-    if not isinstance(node, tuple):
-        # Terminal node
-        if isinstance(node, str) and node.startswith(('0', '1', '+', '-')) or node.isdigit() or (node.startswith(('+', '-')) and node[1:].isdigit()):
-            return '\t' * indent + f"BINARY_LITERAL,{node}"
-        elif isinstance(node, str):
-            return '\t' * indent + f"ID,{node}"
-        return '\t' * indent + str(node)
-    
-    # Non-terminal node
-    op, left, right = node
-    result = '\t' * indent + op + '\n'
-    
-    # left child
-    result += generate_ast_string(left, indent + 1) + '\n'
-    
-    # right child
-    result += generate_ast_string(right, indent + 1)
-    
-    return result
-
-def write_ast_file(ast, filename):
-    output_filename = filename.replace(".bla", ".ast")
-    
-    with open(output_filename, 'w', encoding='utf-8') as f:
-        f.write("Program\n")
+def generate_ast(node, file=None, indent=0):
+    if isinstance(node, tuple):
+        # Non-terminal node
+        output = "\t" * indent + str(node[0])
+        if file:
+            file.write(output + "\n")
         
-        for i, statement in enumerate(ast):
-            stmt_str = generate_ast_string(statement)
-            f.write(stmt_str)
-            f.write('\n')
-    
-    print(f"AST saved to {output_filename}")
+        if node[0] == 'Program':
+            for stmt in node[1]:
+                generate_ast(stmt, file, indent + 1)
+        else:
+            generate_ast(node[1], file, indent + 1)
+            generate_ast(node[2], file, indent + 1)
+    else:
+        # Terminal node
+        if isinstance(node, str):
+            if node.startswith(('0', '1', '+', '-')):
+                output = "\t" * indent + f"BINARY_LITERAL,{node}"
+            else:
+                output = "\t" * indent + f"ID,{node}"
+            if file:
+                file.write(output + "\n")
 
 def process_file(filename):
-    with open(filename, 'r', encoding='utf-8') as f:
-        data = f.read()
+    try:
+        with open(filename, 'r', encoding='utf-8') as f:
+            data = f.read()  
+        # A custom filtered lexer to skip whitespace and comments
+        class FilteredLexer:
+            def __init__(self, tokens):
+                self.tokens = tokens
+                self.pos = 0
+            
+            def token(self):
+                if self.pos < len(self.tokens):
+                    tok = self.tokens[self.pos]
+                    self.pos += 1
+                    return tok
+                return None
+        
+        filtered_tokens = filter_tokens(lexer, data) #using old lexer to get all tokens except whitespaces and comments
+        filtered_lexer = FilteredLexer(filtered_tokens) #dummy lexer to return filtered tokens 
+        ast = parser.parse(lexer=filtered_lexer)  # Parse with filtered tokens
+        output_filename = filename.replace(".bla", ".ast")
+        
+        with open(output_filename, 'w', encoding='utf-8') as f:
+            generate_ast(ast, f)
+        
+        print(f"AST saved to {output_filename}")
     
-    lexer.input(data) 
-    result = parser.parse(lexer=lexer)  # Parse tokens
-
-    print("AST:", result)
-    
-    write_ast_file(result, filename)
+    except FileNotFoundError:
+        print(f"Error: File '{filename}' not found!")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

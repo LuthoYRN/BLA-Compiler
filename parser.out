@@ -1,389 +1,361 @@
 Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
+Unused terminals:
+
+    COMMENT
+    WHITESPACE
+
 Grammar
 
 Rule 0     S' -> program
-Rule 1     program -> program statement
-Rule 2     program -> statement
-Rule 3     statement -> ID EQUALS expression
-Rule 4     expression -> expression A term
-Rule 5     expression -> expression S term
-Rule 6     expression -> term
-Rule 7     term -> term M factor
-Rule 8     term -> term D factor
-Rule 9     term -> factor
-Rule 10    factor -> LPAREN expression RPAREN
-Rule 11    factor -> BINARY_LITERAL
-Rule 12    factor -> ID
-Rule 13    statement -> WHITESPACE
-Rule 14    statement -> COMMENT
+Rule 1     program -> statements
+Rule 2     statements -> statements statement
+Rule 3     statements -> statement
+Rule 4     statements -> <empty>
+Rule 5     statement -> ID EQUALS expression
+Rule 6     expression -> expression A term
+Rule 7     expression -> expression S term
+Rule 8     expression -> term
+Rule 9     term -> term M factor
+Rule 10    term -> term D factor
+Rule 11    term -> factor
+Rule 12    factor -> LPAREN expression RPAREN
+Rule 13    factor -> BINARY_LITERAL
+Rule 14    factor -> ID
 
 Terminals, with rules where they appear
 
-A                    : 4
-BINARY_LITERAL       : 11
-COMMENT              : 14
-D                    : 8
-EQUALS               : 3
-ID                   : 3 12
-LPAREN               : 10
-M                    : 7
-RPAREN               : 10
-S                    : 5
-WHITESPACE           : 13
+A                    : 6
+BINARY_LITERAL       : 13
+COMMENT              : 
+D                    : 10
+EQUALS               : 5
+ID                   : 5 14
+LPAREN               : 12
+M                    : 9
+RPAREN               : 12
+S                    : 7
+WHITESPACE           : 
 error                : 
 
 Nonterminals, with rules where they appear
 
-expression           : 3 4 5 10
-factor               : 7 8 9
-program              : 1 0
-statement            : 1 2
-term                 : 4 5 6 7 8
+expression           : 5 6 7 12
+factor               : 9 10 11
+program              : 0
+statement            : 2 3
+statements           : 1 2
+term                 : 6 7 8 9 10
 
 Parsing method: LALR
 
 state 0
 
     (0) S' -> . program
-    (1) program -> . program statement
-    (2) program -> . statement
-    (3) statement -> . ID EQUALS expression
-    (13) statement -> . WHITESPACE
-    (14) statement -> . COMMENT
+    (1) program -> . statements
+    (2) statements -> . statements statement
+    (3) statements -> . statement
+    (4) statements -> .
+    (5) statement -> . ID EQUALS expression
 
-    ID              shift and go to state 3
-    WHITESPACE      shift and go to state 4
-    COMMENT         shift and go to state 5
+  ! shift/reduce conflict for ID resolved as shift
+    $end            reduce using rule 4 (statements -> .)
+    ID              shift and go to state 4
+
+  ! ID              [ reduce using rule 4 (statements -> .) ]
 
     program                        shift and go to state 1
-    statement                      shift and go to state 2
+    statements                     shift and go to state 2
+    statement                      shift and go to state 3
 
 state 1
 
     (0) S' -> program .
-    (1) program -> program . statement
-    (3) statement -> . ID EQUALS expression
-    (13) statement -> . WHITESPACE
-    (14) statement -> . COMMENT
 
-    ID              shift and go to state 3
-    WHITESPACE      shift and go to state 4
-    COMMENT         shift and go to state 5
 
-    statement                      shift and go to state 6
 
 state 2
 
-    (2) program -> statement .
+    (1) program -> statements .
+    (2) statements -> statements . statement
+    (5) statement -> . ID EQUALS expression
 
-    ID              reduce using rule 2 (program -> statement .)
-    WHITESPACE      reduce using rule 2 (program -> statement .)
-    COMMENT         reduce using rule 2 (program -> statement .)
-    $end            reduce using rule 2 (program -> statement .)
+    $end            reduce using rule 1 (program -> statements .)
+    ID              shift and go to state 4
 
+    statement                      shift and go to state 5
 
 state 3
 
-    (3) statement -> ID . EQUALS expression
+    (3) statements -> statement .
 
-    EQUALS          shift and go to state 7
+    ID              reduce using rule 3 (statements -> statement .)
+    $end            reduce using rule 3 (statements -> statement .)
 
 
 state 4
 
-    (13) statement -> WHITESPACE .
+    (5) statement -> ID . EQUALS expression
 
-    ID              reduce using rule 13 (statement -> WHITESPACE .)
-    WHITESPACE      reduce using rule 13 (statement -> WHITESPACE .)
-    COMMENT         reduce using rule 13 (statement -> WHITESPACE .)
-    $end            reduce using rule 13 (statement -> WHITESPACE .)
+    EQUALS          shift and go to state 6
 
 
 state 5
 
-    (14) statement -> COMMENT .
+    (2) statements -> statements statement .
 
-    ID              reduce using rule 14 (statement -> COMMENT .)
-    WHITESPACE      reduce using rule 14 (statement -> COMMENT .)
-    COMMENT         reduce using rule 14 (statement -> COMMENT .)
-    $end            reduce using rule 14 (statement -> COMMENT .)
+    ID              reduce using rule 2 (statements -> statements statement .)
+    $end            reduce using rule 2 (statements -> statements statement .)
 
 
 state 6
 
-    (1) program -> program statement .
+    (5) statement -> ID EQUALS . expression
+    (6) expression -> . expression A term
+    (7) expression -> . expression S term
+    (8) expression -> . term
+    (9) term -> . term M factor
+    (10) term -> . term D factor
+    (11) term -> . factor
+    (12) factor -> . LPAREN expression RPAREN
+    (13) factor -> . BINARY_LITERAL
+    (14) factor -> . ID
 
-    ID              reduce using rule 1 (program -> program statement .)
-    WHITESPACE      reduce using rule 1 (program -> program statement .)
-    COMMENT         reduce using rule 1 (program -> program statement .)
-    $end            reduce using rule 1 (program -> program statement .)
+    LPAREN          shift and go to state 11
+    BINARY_LITERAL  shift and go to state 12
+    ID              shift and go to state 7
 
+    expression                     shift and go to state 8
+    term                           shift and go to state 9
+    factor                         shift and go to state 10
 
 state 7
 
-    (3) statement -> ID EQUALS . expression
-    (4) expression -> . expression A term
-    (5) expression -> . expression S term
-    (6) expression -> . term
-    (7) term -> . term M factor
-    (8) term -> . term D factor
-    (9) term -> . factor
-    (10) factor -> . LPAREN expression RPAREN
-    (11) factor -> . BINARY_LITERAL
-    (12) factor -> . ID
+    (14) factor -> ID .
 
-    LPAREN          shift and go to state 12
-    BINARY_LITERAL  shift and go to state 13
-    ID              shift and go to state 8
+    M               reduce using rule 14 (factor -> ID .)
+    D               reduce using rule 14 (factor -> ID .)
+    A               reduce using rule 14 (factor -> ID .)
+    S               reduce using rule 14 (factor -> ID .)
+    ID              reduce using rule 14 (factor -> ID .)
+    $end            reduce using rule 14 (factor -> ID .)
+    RPAREN          reduce using rule 14 (factor -> ID .)
 
-    expression                     shift and go to state 9
-    term                           shift and go to state 10
-    factor                         shift and go to state 11
 
 state 8
 
-    (12) factor -> ID .
+    (5) statement -> ID EQUALS expression .
+    (6) expression -> expression . A term
+    (7) expression -> expression . S term
 
-    M               reduce using rule 12 (factor -> ID .)
-    D               reduce using rule 12 (factor -> ID .)
-    A               reduce using rule 12 (factor -> ID .)
-    S               reduce using rule 12 (factor -> ID .)
-    ID              reduce using rule 12 (factor -> ID .)
-    WHITESPACE      reduce using rule 12 (factor -> ID .)
-    COMMENT         reduce using rule 12 (factor -> ID .)
-    $end            reduce using rule 12 (factor -> ID .)
-    RPAREN          reduce using rule 12 (factor -> ID .)
+    ID              reduce using rule 5 (statement -> ID EQUALS expression .)
+    $end            reduce using rule 5 (statement -> ID EQUALS expression .)
+    A               shift and go to state 13
+    S               shift and go to state 14
 
 
 state 9
 
-    (3) statement -> ID EQUALS expression .
-    (4) expression -> expression . A term
-    (5) expression -> expression . S term
+    (8) expression -> term .
+    (9) term -> term . M factor
+    (10) term -> term . D factor
 
-    ID              reduce using rule 3 (statement -> ID EQUALS expression .)
-    WHITESPACE      reduce using rule 3 (statement -> ID EQUALS expression .)
-    COMMENT         reduce using rule 3 (statement -> ID EQUALS expression .)
-    $end            reduce using rule 3 (statement -> ID EQUALS expression .)
-    A               shift and go to state 14
-    S               shift and go to state 15
+    A               reduce using rule 8 (expression -> term .)
+    S               reduce using rule 8 (expression -> term .)
+    ID              reduce using rule 8 (expression -> term .)
+    $end            reduce using rule 8 (expression -> term .)
+    RPAREN          reduce using rule 8 (expression -> term .)
+    M               shift and go to state 15
+    D               shift and go to state 16
 
 
 state 10
 
-    (6) expression -> term .
-    (7) term -> term . M factor
-    (8) term -> term . D factor
+    (11) term -> factor .
 
-    A               reduce using rule 6 (expression -> term .)
-    S               reduce using rule 6 (expression -> term .)
-    ID              reduce using rule 6 (expression -> term .)
-    WHITESPACE      reduce using rule 6 (expression -> term .)
-    COMMENT         reduce using rule 6 (expression -> term .)
-    $end            reduce using rule 6 (expression -> term .)
-    RPAREN          reduce using rule 6 (expression -> term .)
-    M               shift and go to state 16
-    D               shift and go to state 17
+    M               reduce using rule 11 (term -> factor .)
+    D               reduce using rule 11 (term -> factor .)
+    A               reduce using rule 11 (term -> factor .)
+    S               reduce using rule 11 (term -> factor .)
+    ID              reduce using rule 11 (term -> factor .)
+    $end            reduce using rule 11 (term -> factor .)
+    RPAREN          reduce using rule 11 (term -> factor .)
 
 
 state 11
 
-    (9) term -> factor .
+    (12) factor -> LPAREN . expression RPAREN
+    (6) expression -> . expression A term
+    (7) expression -> . expression S term
+    (8) expression -> . term
+    (9) term -> . term M factor
+    (10) term -> . term D factor
+    (11) term -> . factor
+    (12) factor -> . LPAREN expression RPAREN
+    (13) factor -> . BINARY_LITERAL
+    (14) factor -> . ID
 
-    M               reduce using rule 9 (term -> factor .)
-    D               reduce using rule 9 (term -> factor .)
-    A               reduce using rule 9 (term -> factor .)
-    S               reduce using rule 9 (term -> factor .)
-    ID              reduce using rule 9 (term -> factor .)
-    WHITESPACE      reduce using rule 9 (term -> factor .)
-    COMMENT         reduce using rule 9 (term -> factor .)
-    $end            reduce using rule 9 (term -> factor .)
-    RPAREN          reduce using rule 9 (term -> factor .)
+    LPAREN          shift and go to state 11
+    BINARY_LITERAL  shift and go to state 12
+    ID              shift and go to state 7
 
+    expression                     shift and go to state 17
+    term                           shift and go to state 9
+    factor                         shift and go to state 10
 
 state 12
 
-    (10) factor -> LPAREN . expression RPAREN
-    (4) expression -> . expression A term
-    (5) expression -> . expression S term
-    (6) expression -> . term
-    (7) term -> . term M factor
-    (8) term -> . term D factor
-    (9) term -> . factor
-    (10) factor -> . LPAREN expression RPAREN
-    (11) factor -> . BINARY_LITERAL
-    (12) factor -> . ID
+    (13) factor -> BINARY_LITERAL .
 
-    LPAREN          shift and go to state 12
-    BINARY_LITERAL  shift and go to state 13
-    ID              shift and go to state 8
+    M               reduce using rule 13 (factor -> BINARY_LITERAL .)
+    D               reduce using rule 13 (factor -> BINARY_LITERAL .)
+    A               reduce using rule 13 (factor -> BINARY_LITERAL .)
+    S               reduce using rule 13 (factor -> BINARY_LITERAL .)
+    ID              reduce using rule 13 (factor -> BINARY_LITERAL .)
+    $end            reduce using rule 13 (factor -> BINARY_LITERAL .)
+    RPAREN          reduce using rule 13 (factor -> BINARY_LITERAL .)
 
-    expression                     shift and go to state 18
-    term                           shift and go to state 10
-    factor                         shift and go to state 11
 
 state 13
 
-    (11) factor -> BINARY_LITERAL .
+    (6) expression -> expression A . term
+    (9) term -> . term M factor
+    (10) term -> . term D factor
+    (11) term -> . factor
+    (12) factor -> . LPAREN expression RPAREN
+    (13) factor -> . BINARY_LITERAL
+    (14) factor -> . ID
 
-    M               reduce using rule 11 (factor -> BINARY_LITERAL .)
-    D               reduce using rule 11 (factor -> BINARY_LITERAL .)
-    A               reduce using rule 11 (factor -> BINARY_LITERAL .)
-    S               reduce using rule 11 (factor -> BINARY_LITERAL .)
-    ID              reduce using rule 11 (factor -> BINARY_LITERAL .)
-    WHITESPACE      reduce using rule 11 (factor -> BINARY_LITERAL .)
-    COMMENT         reduce using rule 11 (factor -> BINARY_LITERAL .)
-    $end            reduce using rule 11 (factor -> BINARY_LITERAL .)
-    RPAREN          reduce using rule 11 (factor -> BINARY_LITERAL .)
+    LPAREN          shift and go to state 11
+    BINARY_LITERAL  shift and go to state 12
+    ID              shift and go to state 7
 
+    term                           shift and go to state 18
+    factor                         shift and go to state 10
 
 state 14
 
-    (4) expression -> expression A . term
-    (7) term -> . term M factor
-    (8) term -> . term D factor
-    (9) term -> . factor
-    (10) factor -> . LPAREN expression RPAREN
-    (11) factor -> . BINARY_LITERAL
-    (12) factor -> . ID
+    (7) expression -> expression S . term
+    (9) term -> . term M factor
+    (10) term -> . term D factor
+    (11) term -> . factor
+    (12) factor -> . LPAREN expression RPAREN
+    (13) factor -> . BINARY_LITERAL
+    (14) factor -> . ID
 
-    LPAREN          shift and go to state 12
-    BINARY_LITERAL  shift and go to state 13
-    ID              shift and go to state 8
+    LPAREN          shift and go to state 11
+    BINARY_LITERAL  shift and go to state 12
+    ID              shift and go to state 7
 
     term                           shift and go to state 19
-    factor                         shift and go to state 11
+    factor                         shift and go to state 10
 
 state 15
 
-    (5) expression -> expression S . term
-    (7) term -> . term M factor
-    (8) term -> . term D factor
-    (9) term -> . factor
-    (10) factor -> . LPAREN expression RPAREN
-    (11) factor -> . BINARY_LITERAL
-    (12) factor -> . ID
+    (9) term -> term M . factor
+    (12) factor -> . LPAREN expression RPAREN
+    (13) factor -> . BINARY_LITERAL
+    (14) factor -> . ID
 
-    LPAREN          shift and go to state 12
-    BINARY_LITERAL  shift and go to state 13
-    ID              shift and go to state 8
+    LPAREN          shift and go to state 11
+    BINARY_LITERAL  shift and go to state 12
+    ID              shift and go to state 7
 
-    term                           shift and go to state 20
-    factor                         shift and go to state 11
+    factor                         shift and go to state 20
 
 state 16
 
-    (7) term -> term M . factor
-    (10) factor -> . LPAREN expression RPAREN
-    (11) factor -> . BINARY_LITERAL
-    (12) factor -> . ID
+    (10) term -> term D . factor
+    (12) factor -> . LPAREN expression RPAREN
+    (13) factor -> . BINARY_LITERAL
+    (14) factor -> . ID
 
-    LPAREN          shift and go to state 12
-    BINARY_LITERAL  shift and go to state 13
-    ID              shift and go to state 8
+    LPAREN          shift and go to state 11
+    BINARY_LITERAL  shift and go to state 12
+    ID              shift and go to state 7
 
     factor                         shift and go to state 21
 
 state 17
 
-    (8) term -> term D . factor
-    (10) factor -> . LPAREN expression RPAREN
-    (11) factor -> . BINARY_LITERAL
-    (12) factor -> . ID
+    (12) factor -> LPAREN expression . RPAREN
+    (6) expression -> expression . A term
+    (7) expression -> expression . S term
 
-    LPAREN          shift and go to state 12
-    BINARY_LITERAL  shift and go to state 13
-    ID              shift and go to state 8
+    RPAREN          shift and go to state 22
+    A               shift and go to state 13
+    S               shift and go to state 14
 
-    factor                         shift and go to state 22
 
 state 18
 
-    (10) factor -> LPAREN expression . RPAREN
-    (4) expression -> expression . A term
-    (5) expression -> expression . S term
+    (6) expression -> expression A term .
+    (9) term -> term . M factor
+    (10) term -> term . D factor
 
-    RPAREN          shift and go to state 23
-    A               shift and go to state 14
-    S               shift and go to state 15
+    A               reduce using rule 6 (expression -> expression A term .)
+    S               reduce using rule 6 (expression -> expression A term .)
+    ID              reduce using rule 6 (expression -> expression A term .)
+    $end            reduce using rule 6 (expression -> expression A term .)
+    RPAREN          reduce using rule 6 (expression -> expression A term .)
+    M               shift and go to state 15
+    D               shift and go to state 16
 
 
 state 19
 
-    (4) expression -> expression A term .
-    (7) term -> term . M factor
-    (8) term -> term . D factor
+    (7) expression -> expression S term .
+    (9) term -> term . M factor
+    (10) term -> term . D factor
 
-    A               reduce using rule 4 (expression -> expression A term .)
-    S               reduce using rule 4 (expression -> expression A term .)
-    ID              reduce using rule 4 (expression -> expression A term .)
-    WHITESPACE      reduce using rule 4 (expression -> expression A term .)
-    COMMENT         reduce using rule 4 (expression -> expression A term .)
-    $end            reduce using rule 4 (expression -> expression A term .)
-    RPAREN          reduce using rule 4 (expression -> expression A term .)
-    M               shift and go to state 16
-    D               shift and go to state 17
+    A               reduce using rule 7 (expression -> expression S term .)
+    S               reduce using rule 7 (expression -> expression S term .)
+    ID              reduce using rule 7 (expression -> expression S term .)
+    $end            reduce using rule 7 (expression -> expression S term .)
+    RPAREN          reduce using rule 7 (expression -> expression S term .)
+    M               shift and go to state 15
+    D               shift and go to state 16
 
 
 state 20
 
-    (5) expression -> expression S term .
-    (7) term -> term . M factor
-    (8) term -> term . D factor
+    (9) term -> term M factor .
 
-    A               reduce using rule 5 (expression -> expression S term .)
-    S               reduce using rule 5 (expression -> expression S term .)
-    ID              reduce using rule 5 (expression -> expression S term .)
-    WHITESPACE      reduce using rule 5 (expression -> expression S term .)
-    COMMENT         reduce using rule 5 (expression -> expression S term .)
-    $end            reduce using rule 5 (expression -> expression S term .)
-    RPAREN          reduce using rule 5 (expression -> expression S term .)
-    M               shift and go to state 16
-    D               shift and go to state 17
+    M               reduce using rule 9 (term -> term M factor .)
+    D               reduce using rule 9 (term -> term M factor .)
+    A               reduce using rule 9 (term -> term M factor .)
+    S               reduce using rule 9 (term -> term M factor .)
+    ID              reduce using rule 9 (term -> term M factor .)
+    $end            reduce using rule 9 (term -> term M factor .)
+    RPAREN          reduce using rule 9 (term -> term M factor .)
 
 
 state 21
 
-    (7) term -> term M factor .
+    (10) term -> term D factor .
 
-    M               reduce using rule 7 (term -> term M factor .)
-    D               reduce using rule 7 (term -> term M factor .)
-    A               reduce using rule 7 (term -> term M factor .)
-    S               reduce using rule 7 (term -> term M factor .)
-    ID              reduce using rule 7 (term -> term M factor .)
-    WHITESPACE      reduce using rule 7 (term -> term M factor .)
-    COMMENT         reduce using rule 7 (term -> term M factor .)
-    $end            reduce using rule 7 (term -> term M factor .)
-    RPAREN          reduce using rule 7 (term -> term M factor .)
+    M               reduce using rule 10 (term -> term D factor .)
+    D               reduce using rule 10 (term -> term D factor .)
+    A               reduce using rule 10 (term -> term D factor .)
+    S               reduce using rule 10 (term -> term D factor .)
+    ID              reduce using rule 10 (term -> term D factor .)
+    $end            reduce using rule 10 (term -> term D factor .)
+    RPAREN          reduce using rule 10 (term -> term D factor .)
 
 
 state 22
 
-    (8) term -> term D factor .
+    (12) factor -> LPAREN expression RPAREN .
 
-    M               reduce using rule 8 (term -> term D factor .)
-    D               reduce using rule 8 (term -> term D factor .)
-    A               reduce using rule 8 (term -> term D factor .)
-    S               reduce using rule 8 (term -> term D factor .)
-    ID              reduce using rule 8 (term -> term D factor .)
-    WHITESPACE      reduce using rule 8 (term -> term D factor .)
-    COMMENT         reduce using rule 8 (term -> term D factor .)
-    $end            reduce using rule 8 (term -> term D factor .)
-    RPAREN          reduce using rule 8 (term -> term D factor .)
+    M               reduce using rule 12 (factor -> LPAREN expression RPAREN .)
+    D               reduce using rule 12 (factor -> LPAREN expression RPAREN .)
+    A               reduce using rule 12 (factor -> LPAREN expression RPAREN .)
+    S               reduce using rule 12 (factor -> LPAREN expression RPAREN .)
+    ID              reduce using rule 12 (factor -> LPAREN expression RPAREN .)
+    $end            reduce using rule 12 (factor -> LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 12 (factor -> LPAREN expression RPAREN .)
 
-
-state 23
-
-    (10) factor -> LPAREN expression RPAREN .
-
-    M               reduce using rule 10 (factor -> LPAREN expression RPAREN .)
-    D               reduce using rule 10 (factor -> LPAREN expression RPAREN .)
-    A               reduce using rule 10 (factor -> LPAREN expression RPAREN .)
-    S               reduce using rule 10 (factor -> LPAREN expression RPAREN .)
-    ID              reduce using rule 10 (factor -> LPAREN expression RPAREN .)
-    WHITESPACE      reduce using rule 10 (factor -> LPAREN expression RPAREN .)
-    COMMENT         reduce using rule 10 (factor -> LPAREN expression RPAREN .)
-    $end            reduce using rule 10 (factor -> LPAREN expression RPAREN .)
-    RPAREN          reduce using rule 10 (factor -> LPAREN expression RPAREN .)
-
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for ID in state 0 resolved as shift

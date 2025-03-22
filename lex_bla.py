@@ -2,11 +2,11 @@ import ply.lex as lex
 import sys
 
 # Define token names
-tokens = ['COMMENT','A','S','M','D','EQUALS','LPAREN','RPAREN', 'ID', 'BINARY_LITERAL', 'WHITESPACE']
+tokens = ['COMMENT', 'A', 'S', 'M', 'D', 'EQUALS', 'LPAREN', 'RPAREN', 'ID', 'BINARY_LITERAL', 'WHITESPACE']
 
 error_messages = []
 
-#Token rules
+# Token rules
 t_A = r'A'
 t_S = r'S'
 t_M = r'M'
@@ -28,35 +28,44 @@ def t_COMMENT(t):
     return t
 
 def t_WHITESPACE(t):
-    r'\s+'
+    r'[ \t\r]+'
     return t
 
+def t_newline(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
+
 def t_error(t):
-    #print(f"lexical error on line {t.lexer.lineno}")
-    error_messages.append(f"lexical error on line {t.lexer.lineno}")
+    msg = f"lexical error on line {t.lexer.lineno}"
+    error_messages.append(msg)
     t.lexer.skip(1)
 
-#Building lexer
+# Building lexer
 lexer = lex.lex()
 
-#Processing bla file
+# Processing bla file
 def process_file(input_filename):
     output_filename = input_filename.replace(".bla", ".tkn")
     try:
         with open(input_filename, 'r', encoding='utf-8') as file_in, open(output_filename, 'w', encoding='utf-8') as file_out:
             content = file_in.read()
+            lexer.lineno = 1  # Reset line number for each file
+            error_messages.clear()  # Clear previous errors
             lexer.input(content)
             while True:
                 tok = lexer.token()
                 if not tok:
                     break
-                if tok.type in ['LPAREN','RPAREN','EQUALS']:
+                if tok.type in {'LPAREN', 'RPAREN', 'EQUALS'}:
                     token_output = f"{tok.value}"
-                elif tok.type in ['A','S','M','D',"WHITESPACE","COMMENT"]:
+                elif tok.type in {'A', 'S', 'M', 'D', 'WHITESPACE', 'COMMENT'}:
                     token_output = f"{tok.type}"
                 else:
-                    token_output = f"{tok.type},{tok.value}"          
-                file_out.write(token_output + "\n") 
+                    token_output = f"{tok.type},{tok.value}"
+                file_out.write(token_output + "\n")
+            # Optionally print lexical errors here (if required)
+            # for err in error_messages:
+            #     file_out.write(err + "\n")
         print(f"Tokens saved to {output_filename}")
     except FileNotFoundError:
         print(f"Error: File '{input_filename}' not found!")

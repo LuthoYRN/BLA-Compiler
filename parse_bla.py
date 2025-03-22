@@ -1,5 +1,5 @@
 import ply.yacc as yacc
-from lex_bla import tokens,lexer
+from lex_bla import tokens,lexer,error_messages
 import sys
 
 def filter_tokens(lexer, data):
@@ -70,7 +70,8 @@ def p_factor(p):
         p[0] = p[2]
 
 def p_error(p):
-    print("Syntax error found!")
+    #print(f"parse error on line {p.lineno}")
+    error_messages.append(f"parse error on line {p.lineno}")
 
 # Building the parser
 parser = yacc.yacc()

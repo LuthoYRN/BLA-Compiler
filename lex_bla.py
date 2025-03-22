@@ -4,6 +4,8 @@ import sys
 # Define token names
 tokens = ['COMMENT','A','S','M','D','EQUALS','LPAREN','RPAREN', 'ID', 'BINARY_LITERAL', 'WHITESPACE']
 
+error_messages = []
+
 #Token rules
 t_A = r'A'
 t_S = r'S'
@@ -30,7 +32,8 @@ def t_WHITESPACE(t):
     return t
 
 def t_error(t):
-    print(f"Illegal character '{t.value[0]}' at line {t.lexer.lineno}")
+    #print(f"lexical error on line {t.lexer.lineno}")
+    error_messages.append(f"lexical error on line {t.lexer.lineno}")
     t.lexer.skip(1)
 
 #Building lexer

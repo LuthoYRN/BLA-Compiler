@@ -1,5 +1,5 @@
 import ply.yacc as yacc
-from lex_bla import tokens,lexer
+from lex_bla import tokens, lexer, error_messages
 import sys
 
 def filter_tokens(lexer, data):
@@ -34,7 +34,7 @@ def p_statement(p):
     '''
     statement : ID EQUALS expression
     '''
-    p[0] = (p[2], p[1], p[3])
+    p[0] = (p[2], p[1], p[3], p.lineno(1))  
 
 def p_expression(p):
     '''
@@ -43,7 +43,7 @@ def p_expression(p):
                | term
     '''
     if len(p) == 4:
-        p[0] = (p[2], p[1], p[3])
+        p[0] = (p[2], p[1], p[3], p.lineno(2)) 
     else:
         p[0] = p[1]
 
@@ -54,7 +54,7 @@ def p_term(p):
          | factor
     '''
     if len(p) == 4:
-        p[0] = (p[2], p[1], p[3])
+        p[0] = (p[2], p[1], p[3], p.lineno(2))  
     else:
         p[0] = p[1]
 
@@ -70,7 +70,10 @@ def p_factor(p):
         p[0] = p[2]
 
 def p_error(p):
-    print("Syntax error found!")
+    if p:
+        error_messages.append(f"parse error on line {p.lineno}")
+    else:
+        error_messages.append("parse error at EOF")
 
 # Building the parser
 parser = yacc.yacc()

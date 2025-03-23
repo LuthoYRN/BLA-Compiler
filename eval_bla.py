@@ -1,12 +1,10 @@
-from lex_bla import lexer,error_messages
-from parse_bla import parser,filter_tokens
+from lex_bla import lexer, error_messages
+from parse_bla import parser, filter_tokens
 import sys
 
 symbol_table = {} 
 
 def convert_to_binary(num):
-    if isinstance(num,str):
-        return num
     if num < 0:
         return f"-{bin(abs(num))[2:]}" 
     else:
@@ -19,12 +17,15 @@ def convert_to_decimal(binary_str):
         return int(binary_str[1:], 2)
     else:
         return int(binary_str, 2)
+    
+def is_binary_string(value):
+    return isinstance(value, str) and any(c in value for c in '01+-') and not(value[:1].isalpha())
 
 def evaluate(node):
     if isinstance(node, str):
         # Check if it's a binary literal
-        if any(c in node for c in '01+-') and not(node[:1].isalpha()):
-            if node[:1]=='0':
+        if is_binary_string(node):
+            if node.startswith('0'):
                 return node
             return convert_to_decimal(node)
         # Otherwise it's a variable
@@ -33,7 +34,7 @@ def evaluate(node):
         else:
             raise ValueError(f"Variable {node} not defined")
     
-    # Handle tuple nodes (operations)
+    # tuple nodes = operations
     if isinstance(node, tuple):
         if node[0] == '=':
             var_name = node[1]
@@ -41,9 +42,15 @@ def evaluate(node):
             symbol_table[var_name] = value
             return value
         
-        # Evaluate binary operations
+        #Evaluate binary operations
         left = evaluate(node[1])
         right = evaluate(node[2])
+        
+        # Convert string binary values to decimal for operations
+        if is_binary_string(left):
+            left = convert_to_decimal(left)
+        if is_binary_string(right):
+            right = convert_to_decimal(right)
         
         if node[0] == 'A':
             return left + right
@@ -52,8 +59,7 @@ def evaluate(node):
         elif node[0] == 'M':
             return left * right
         elif node[0] == 'D':
-            return left // right  # Integer division
-    
+            return left // right
     return None
 
 def process_file(input_filename):
@@ -90,8 +96,14 @@ def process_file(input_filename):
                 for stmt in ast[1]:
                     if stmt[0] == '=':
                         var_name = stmt[1]
-                        evaluate(stmt)  
-                        binary_value = convert_to_binary(symbol_table[var_name])
+                        evaluate(stmt)
+                        value = symbol_table[var_name]
+                        
+                        if is_binary_string(value):
+                            binary_value = value  # For assignments that start with '0'
+                        else:
+                            binary_value = convert_to_binary(value)
+                            
                         output = f"{var_name}[{binary_value}]"
                         print(output)
                         results.append(output)

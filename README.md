@@ -1,25 +1,71 @@
 # BLA Compiler
 
-This project implements a lexical analyzer and a syntactic analyzer for the **BLA** (Binary Language) programming language using Python and PLY (Python Lex-Yacc).
+This project implements a **lexical analyzer**, **syntactic analyzer**, **semantic analyzer**, and **evaluator** for the **BLA (Binary Language)** programming language using Python and **PLY (Python Lex-Yacc)**.
 
-## Features
+---
 
-- **Lexer (`lex_bla.py`)**: Converts a `.bla` source file into a sequence of tokens and outputs them to the screen and a `.tkn` file.
-- **Parser (`parse_bla.py`)**: Validates that the tokens conform to BLA's grammar, constructs an Abstract Syntax Tree (AST), and outputs it to the screen and a `.ast` file.
+## **Features**
 
-## Usage
+- **Lexer (`lex_bla.py`)**:  
+  Converts a `.bla` source file into a sequence of tokens and outputs them to the screen and a `.tkn` file.
 
-Run the lexer:
+- **Parser (`parse_bla.py`)**:  
+  Validates that the tokens conform to BLA's grammar, constructs an Abstract Syntax Tree (AST), and outputs it to a `.ast` file.
 
-```sh
+- **Semantic Analyzer (`errors_bla.py`)**:  
+  Performs semantic checks on the AST:
+
+  - Checks if a variable is used before being defined.
+  - Checks if a variable is redefined (assigned multiple times).
+    Reports the **first error (lexical, syntactic, or semantic)** to the screen and a `.err` file.
+
+- **Evaluator (`eval_bla.py`)**:  
+  Evaluates valid BLA programs, computing and outputting variable values in binary format to a `.eva` file.
+
+---
+
+## **Usage**
+
+### **Run the Lexer:**
+
+```bash
 python lex_bla.py my_program.bla
 ```
 
-Run the parser:
+- Outputs tokens to `my_program.tkn`.
 
-```sh
+---
+
+### **Run the Parser:**
+
+```bash
 python parse_bla.py my_program.bla
 ```
+
+- Outputs AST to `my_program.ast`.
+
+---
+
+### **Run Semantic Analysis:**
+
+```bash
+python errors_bla.py my_program.bla
+```
+
+- Outputs any error to `my_program.err` (lexical, parse, or semantic error).
+- Stops at the first detected error.
+
+---
+
+### **Run the Evaluator:**
+
+```bash
+python eval_bla.py my_program.bla
+```
+
+- Evaluates the program and outputs each assigned variable with its binary value to `my_program.eva`.
+
+---
 
 ## Token Definitions
 
@@ -27,15 +73,17 @@ python parse_bla.py my_program.bla
 - Numeric Literals: Binary numbers with optional + or - prefix.
 - Operators: A (Addition), S (Subtraction), M (Multiplication), D (Integer Division), =, (, ).
 - Whitespace: Spaces, tabs, newlines, and carriage returns.
-- Comments: /* block comments */ and // line comments.
+- Comments: /_ block comments _/ and // line comments.
 
 ## Grammar
-- Program → Statement*
+
+- Program → Statement\*
 - Statement → identifier = Expression
 - Expression → Expression A Term | Expression S Term | Term
 - Term → Term M Factor | Term D Factor | Factor
 - Factor → ( Expression ) | binary | identifier
 
 ## Dependencies
+
 - Python 3.x
 - PLY (Python Lex-Yacc)
